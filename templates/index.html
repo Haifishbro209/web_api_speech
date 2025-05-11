@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speech to Text – 4 Sprachen</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 1rem;
+      background: #f9f9f9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    select, button {
+      font-size: 1rem;
+      padding: 0.5rem;
+      margin-top: 1rem;
+      width: 100%;
+      max-width: 300px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:active {
+      background: #0056b3;
+    }
+    #output {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      word-wrap: break-word;
+    }
+    @media (max-width: 480px) {
+      body {
+        padding: 0.8rem;
+      }
+      h1 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Sprache zu Text</h1>
+  <label for="language">Sprache wählen:</label>
+  <select id="language">
+    <option value="de-DE">Deutsch</option>
+    <option value="en-US">Englisch (US)</option>
+    <option value="fr-FR">Französisch</option>
+    <option value="zh-CN">Chinesisch (Mandarin)</option>
+  </select>
+  <br>
+  <button onclick="startListening()">🎤 Start</button>
+  <div id="output">Sprich jetzt ...</div>
+
+  <script>
+    const output = document.getElementById('output');
+    const langSelect = document.getElementById('language');
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      output.textContent = "Dein Browser unterstützt keine Spracherkennung.";
+    } else {
+      const recognition = new SpeechRecognition();
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      function startListening() {
+        recognition.lang = langSelect.value;
+        output.textContent = `Höre zu (${recognition.lang})...`;
+        recognition.start();
+      }
+
+      recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        output.textContent = `Erkannt (${recognition.lang}): ${text}`;
+      };
+
+      recognition.onerror = (event) => {
+        output.textContent = `Fehler: ${event.error}`;
+      };
+    }
+  </script>
+</body>
+</html>
