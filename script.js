@@ -1,31 +1,25 @@
-const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition;
-const SpeechGrammarList =
-  window.SpeechGrammarList || window.webkitSpeechGrammarList;
-const SpeechRecognitionEvent =
-  window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
+const output = document.getElementById("text");
 
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+recognition.lang = 'de-DE';
+recognition.interimResults = true;
+recognition.continuous = true;
 
-  const colors = [
-    "aqua",
-    "azure",
-    "beige",
-    "bisque",
-    "black",
-    "blue",
-    "brown",
-    "chocolate",
-    "coral",
-    // …
-  ];
-  const grammar = `#JSGF V1.0; grammar colors; public <color> = ${colors.join(
-    " | ",
-  )};`;
+let finalTranscript = '';
+navigator.mediaDevices.getUserMedia({ audio: true })
+recognition.start();
+recognition.onend = () => recognition.start();
 
-  console.log(grammar)
-  // #JSGF V1.0; grammar colors; public <color> = aqua | azure | beige | bisque | black | blue | brown | chocolate | coral;
-
-
-  const recognition = new SpeechRecognition();
-const speechRecognitionList = new SpeechGrammarList();
-// https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API
+recognition.onresult = event => {
+  let interimTranscript = '';
+  
+  for (let i = event.resultIndex; i < event.results.length; i++) {
+    if (event.results[i].isFinal) {
+      finalTranscript += event.results[i][0].transcript + ' ';
+    } else {
+      interimTranscript += event.results[i][0].transcript;
+    }
+  }
+  
+  output.value = finalTranscript + interimTranscript;
+};
