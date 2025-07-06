@@ -1,25 +1,11 @@
-const output = document.getElementById("text");
+const output = document.getElementById("text")
 
-const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-recognition.lang = 'de-DE';
-recognition.interimResults = true;
-recognition.continuous = true;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-let finalTranscript = '';
-navigator.mediaDevices.getUserMedia({ audio: true })
+const recognition = new SpeechRecognition();
+recognition.lang = "de-DE";
 recognition.start();
-recognition.onend = () => recognition.start();
 
-recognition.onresult = event => {
-  let interimTranscript = '';
-  
-  for (let i = event.resultIndex; i < event.results.length; i++) {
-    if (event.results[i].isFinal) {
-      finalTranscript += event.results[i][0].transcript + ' ';
-    } else {
-      interimTranscript += event.results[i][0].transcript;
-    }
-  }
-  
-  output.value = finalTranscript + interimTranscript;
+recognition.onresult = event =>{
+  output.value += event.results[0][0].transcript;
 };
